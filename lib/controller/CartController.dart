@@ -58,6 +58,10 @@ class CartController extends GetxController {
     return total;
   }
 
+  double get vatAmount {
+    return (vat.value / 100) * subTotal;
+  }
+
 
 
 }

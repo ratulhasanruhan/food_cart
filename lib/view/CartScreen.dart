@@ -386,7 +386,7 @@ class _CartScreenState extends State<CartScreen> {
                           ),
                         ),
                         Text(
-                          '\$5.0',
+                          '\$${cartController.vatAmount}',
                           style: TextStyle(
                             fontSize: 18,
                             color: accentColor,
@@ -411,7 +411,7 @@ class _CartScreenState extends State<CartScreen> {
                           ),
                         ),
                         Text(
-                          '\$50.0',
+                          '\$${cartController.subTotal + cartController.vatAmount}',
                           style: TextStyle(
                             fontSize: 18,
                             color: primaryColor,
