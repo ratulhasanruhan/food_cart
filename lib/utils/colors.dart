@@ -5,3 +5,4 @@ const accentColor = Color(0xFF02308E);
 const textColor = Color(0xFF010832);
 
 const backgroundColor = Color(0xFFFFF1E9);
+const backWhite = Color(0xFFF7F8F9);
