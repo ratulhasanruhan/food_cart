@@ -362,7 +362,7 @@ class _CartScreenState extends State<CartScreen> {
                           ),
                         ),
                         Text(
-                          '\$50.0',
+                          '\$${cartController.subTotal}',
                           style: TextStyle(
                             fontSize: 18,
                             color: primaryColor,

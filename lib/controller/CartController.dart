@@ -50,6 +50,14 @@ class CartController extends GetxController {
     }
   }
 
+  double get subTotal {
+    double total = 0;
+    for(var item in cartItems){
+      total += item['price'] * item['quantity'];
+    }
+    return total;
+  }
+
 
 
 }
