@@ -89,7 +89,7 @@ class _CartScreenState extends State<CartScreen> {
                                 ),
                               ),
                               Text(
-                                'Vat(5%) Service Charge(5%)',
+                                'Vat(${cartController.vat}%) Service Charge(5%)',
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: Colors.white,
@@ -102,7 +102,7 @@ class _CartScreenState extends State<CartScreen> {
                             Container(
                               color: backWhite,
                               child: ListView.separated(
-                                  itemCount: 5,
+                                  itemCount: cartController.items.length,
                                   shrinkWrap: true,
                                   primary: false,
                                   separatorBuilder: (context, index) {
@@ -154,8 +154,7 @@ class _CartScreenState extends State<CartScreen> {
                                     return Padding(
                                       padding: const EdgeInsets.all(10),
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment
-                                            .spaceBetween,
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
                                           DottedBorder(
                                             radius: Radius.circular(8),
@@ -165,53 +164,48 @@ class _CartScreenState extends State<CartScreen> {
                                               padding: const EdgeInsets.all(8),
                                               decoration: BoxDecoration(
                                                 color: backgroundColor,
-                                                borderRadius: BorderRadius
-                                                    .circular(8),
+                                                borderRadius: BorderRadius.circular(8),
                                               ),
                                               child: ClipRRect(
-                                                borderRadius: BorderRadius
-                                                    .circular(50),
+                                                borderRadius: BorderRadius.circular(50),
                                                 child: Image.network(
-                                                  'https://img.freepik.com/free-photo/tasty-burger-isolated-white-background-fresh-hamburger-fastfood-with-beef-cheese_90220-1063.jpg',
+                                                  cartController.items[index]['image'],
                                                   height: 52,
                                                   width: 52,
+                                                  fit: BoxFit.cover,
                                                 ),
                                               ),
                                             ),
                                           ),
                                           SizedBox(
-                                            width: 6,
+                                            width: 8,
                                           ),
-                                          Column(
-                                            crossAxisAlignment: CrossAxisAlignment
-                                                .start,
-                                            children: [
-                                              Text(
-                                                'Food Name',
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: textColor,
-                                                  fontWeight: FontWeight.w600,
+                                          SizedBox(
+                                            width: MediaQuery.of(context).size.width * 0.5,
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  cartController.items[index]['name'],
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    color: textColor,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
                                                 ),
-                                              ),
-                                              SizedBox(
-                                                height: 4,
-                                              ),
-                                              SizedBox(
-                                                width: MediaQuery
-                                                    .of(context)
-                                                    .size
-                                                    .width * 0.5,
-                                                child: Text(
-                                                  'Lorem ipsum dolor sit amet consectetur.',
+                                                SizedBox(
+                                                  height: 4,
+                                                ),
+                                                Text(
+                                                  cartController.items[index]['description'],
                                                   style: TextStyle(
                                                     fontSize: 12,
                                                     color: Color(0xFF686868),
                                                     fontWeight: FontWeight.w400,
                                                   ),
-                                                ),
-                                              )
-                                            ],
+                                                )
+                                              ],
+                                            ),
                                           ),
                                           Column(
                                             crossAxisAlignment: CrossAxisAlignment
@@ -220,7 +214,7 @@ class _CartScreenState extends State<CartScreen> {
                                                 .start,
                                             children: [
                                               Text(
-                                                '\$50.00',
+                                                '\$${cartController.items[index]['discount_price'] == 0 ? cartController.items[index]['price'].toDouble().toStringAsFixed(2) : cartController.items[index]['discount_price'].toDouble().toStringAsFixed(2)}',
                                                 style: TextStyle(
                                                   fontSize: 15,
                                                   color: accentColor,
@@ -230,10 +224,41 @@ class _CartScreenState extends State<CartScreen> {
                                               const SizedBox(
                                                 height: 8,
                                               ),
-                                              Material(
-                                                child: InkWell(
-                                                  onTap: () {},
-                                                  child: Container(
+                                              Obx(() {
+                                                if(cartController.cartItems.indexWhere((element) => element['id'] == cartController.items[index]['id']) == -1){
+                                                  return Material(
+                                                    child: InkWell(
+                                                      onTap: () {
+                                                        cartController.addToCart(cartController.items[index]);
+                                                      },
+                                                      child: Container(
+                                                        padding: const EdgeInsets
+                                                            .symmetric(
+                                                            horizontal: 16,
+                                                            vertical: 4),
+                                                        decoration: BoxDecoration(
+                                                          borderRadius: BorderRadius
+                                                              .circular(4),
+                                                          border: Border.all(
+                                                            color: primaryColor,
+                                                            width: 1,
+                                                          ),
+                                                        ),
+                                                        child: Text(
+                                                          'Add',
+                                                          style: TextStyle(
+                                                            fontSize: 12,
+                                                            color: textColor,
+                                                            fontWeight: FontWeight
+                                                                .w400,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                                else{
+                                                  return Container(
                                                     padding: const EdgeInsets
                                                         .symmetric(
                                                         horizontal: 16,
@@ -246,18 +271,54 @@ class _CartScreenState extends State<CartScreen> {
                                                         width: 1,
                                                       ),
                                                     ),
-                                                    child: Text(
-                                                      'Add',
-                                                      style: TextStyle(
-                                                        fontSize: 12,
-                                                        color: textColor,
-                                                        fontWeight: FontWeight
-                                                            .w400,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
+                                                    child: Obx(() => Row(
+                                                      children: [
+                                                        GestureDetector(
+                                                          onTap: () {
+                                                            setState(() {
+                                                              cartController.removeFromCart(cartController.items[index]);
+                                                            });
+                                                          },
+                                                          child: Text(
+                                                            '-  ',
+                                                            style: TextStyle(
+                                                              fontSize: 12,
+                                                              color: textColor,
+                                                              fontWeight: FontWeight
+                                                                  .w400,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          cartController.cartItems[cartController.cartItems.indexWhere((element) => element['id'] == cartController.items[index]['id'])]['quantity'].toString(),
+                                                          style: TextStyle(
+                                                            fontSize: 12,
+                                                            color: textColor,
+                                                            fontWeight: FontWeight
+                                                                .w400,
+                                                          ),
+                                                        ),
+                                                        GestureDetector(
+                                                          onTap: () {
+                                                            setState(() {
+                                                              cartController.cartItems[cartController.cartItems.indexWhere((element) => element['id'] == cartController.items[index]['id'])]['quantity'] += 1;
+                                                            });
+                                                          },
+                                                          child: Text(
+                                                            '  +',
+                                                            style: TextStyle(
+                                                              fontSize: 12,
+                                                              color: textColor,
+                                                              fontWeight: FontWeight
+                                                                  .w400,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    )),
+                                                  );
+                                                }
+                                              })
 
                                             ],
                                           )
@@ -317,7 +378,7 @@ class _CartScreenState extends State<CartScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Vat(5%) Service Charge included (5%)',
+                          'Vat(${cartController.vat}%) Service Charge included (5%)',
                           style: TextStyle(
                             fontSize: 12,
                             color: accentColor,
